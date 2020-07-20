@@ -63,6 +63,7 @@ class ChatUser {
 		else if (msg.type === 'get-joke') await this.handleJoke();
 		else if (msg.type === 'get-members') this.handleMembers();
 		else if (msg.type === 'set-name') this.handleChangeName(msg.text);
+		else if (msg.type === 'private') this.handlePrivateMessage(msg);
 		else throw new Error(`bad message: ${msg.type}`);
 	}
 
@@ -99,6 +100,28 @@ class ChatUser {
 			text : text
 		});
 		this.name = text;
+	}
+
+	/** Handle private message: sends a private message to a user */
+	handlePrivateMessage(msg) {
+		this.room.members.forEach((member) => {
+			if (member.name === msg.toUser) {
+				member.send(
+					JSON.stringify({
+						type : 'private',
+						name : this.name,
+						text : msg.text
+					})
+				);
+				this.send(
+					JSON.stringify({
+						type : 'private',
+						name : this.name,
+						text : msg.text
+					})
+				);
+			}
+		});
 	}
 
 	/** Connection was closed: leave room, announce exit to others */

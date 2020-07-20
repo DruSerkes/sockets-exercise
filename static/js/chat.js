@@ -31,6 +31,8 @@ ws.onmessage = function(evt) {
 		listMembers(msg);
 	} else if (msg.type === 'name-change') {
 		item = $(`<li><i><b>${msg.name}</b> has changed their name to <b>${msg.text}</b></i></li>`);
+	} else if (msg.type === 'private') {
+		item = $(`<li><i>(Whisper) <b>${msg.name}: </b>${msg.text} </i></li>`);
 	} else {
 		return console.error(`bad message: ${msg}`);
 	}
@@ -61,6 +63,11 @@ $('form').submit(function(evt) {
 	if (data.text.slice(0, 5) === '/name') {
 		data.type = 'set-name';
 		data.text = data.text.slice(6);
+	}
+	if (data.text.slice(0, 5) === '/priv') {
+		data.type = 'private';
+		data.toUser = data.text.split(' ')[1];
+		data.text = data.text.split(' ').slice(2).join(' ');
 	}
 
 	ws.send(JSON.stringify(data));
