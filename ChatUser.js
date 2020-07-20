@@ -61,8 +61,8 @@ class ChatUser {
 		if (msg.type === 'join') this.handleJoin(msg.name);
 		else if (msg.type === 'chat') this.handleChat(msg.text);
 		else if (msg.type === 'get-joke') await this.handleJoke();
-		else if (msg.type === 'get-members')
-			this.handleMembers(); // TODO
+		else if (msg.type === 'get-members') this.handleMembers();
+		else if (msg.type === 'set-name') this.handleChangeName(msg.text);
 		else throw new Error(`bad message: ${msg.type}`);
 	}
 
@@ -89,6 +89,16 @@ class ChatUser {
 				members
 			})
 		);
+	}
+
+	/** Handle name change: updates this.name and broadcasts the name change to the room */
+	handleChangeName(text) {
+		this.room.broadcast({
+			name : this.name,
+			type : 'name-change',
+			text : text
+		});
+		this.name = text;
 	}
 
 	/** Connection was closed: leave room, announce exit to others */

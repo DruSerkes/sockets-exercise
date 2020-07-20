@@ -28,12 +28,9 @@ ws.onmessage = function(evt) {
 	} else if (msg.type === 'chat' || msg.type === 'joke') {
 		item = $(`<li><b>${msg.name}: </b>${msg.text}</li>`);
 	} else if (msg.type === 'members') {
-		let heading = $(`<li><b>${msg.name}: </b></li>`);
-		$('#messages').append(heading);
-		msg.members.forEach((member) => {
-			item = $(`<li><i>${member}</i></li>`);
-			$('#messages').append(item);
-		});
+		listMembers(msg);
+	} else if (msg.type === 'name-change') {
+		item = $(`<li><i><b>${msg.name}</b> has changed their name to <b>${msg.text}</b></i></li>`);
 	} else {
 		return console.error(`bad message: ${msg}`);
 	}
@@ -61,8 +58,29 @@ $('form').submit(function(evt) {
 	let data = { type: 'chat', text: $('#m').val() };
 	if (data.text === '/joke') data.type = 'get-joke';
 	if (data.text === '/members') data.type = 'get-members';
+	if (data.text.slice(0, 5) === '/name') {
+		data.type = 'set-name';
+		data.text = data.text.slice(6);
+	}
 
 	ws.send(JSON.stringify(data));
 
 	$('#m').val('');
 });
+
+/** Helpers to keep onmessage clean  */
+
+/** list members on the DOM   
+ * msg: parsed JSON event data from a web socket connection 
+ * contains .name: who is delivering msg, .members: list of member names 
+ */
+
+function listMembers(msg) {
+	let item;
+	let heading = $(`<li><b>${msg.name}: </b></li>`);
+	$('#messages').append(heading);
+	msg.members.forEach((member) => {
+		item = $(`<li><i>${member}</i></li>`);
+		$('#messages').append(item);
+	});
+}
