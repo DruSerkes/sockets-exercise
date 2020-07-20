@@ -27,6 +27,13 @@ ws.onmessage = function(evt) {
 		item = $(`<li><i>${msg.text}</i></li>`);
 	} else if (msg.type === 'chat' || msg.type === 'joke') {
 		item = $(`<li><b>${msg.name}: </b>${msg.text}</li>`);
+	} else if (msg.type === 'members') {
+		let heading = $(`<li><b>${msg.name}: </b></li>`);
+		$('#messages').append(heading);
+		msg.members.forEach((member) => {
+			item = $(`<li><i>${member}</i></li>`);
+			$('#messages').append(item);
+		});
 	} else {
 		return console.error(`bad message: ${msg}`);
 	}

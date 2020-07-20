@@ -61,17 +61,32 @@ class ChatUser {
 		if (msg.type === 'join') this.handleJoin(msg.name);
 		else if (msg.type === 'chat') this.handleChat(msg.text);
 		else if (msg.type === 'get-joke') await this.handleJoke();
+		else if (msg.type === 'get-members')
+			this.handleMembers(); // TODO
 		else throw new Error(`bad message: ${msg.type}`);
 	}
 
+	/** Handle asking for a joke: get a random dad joke from external API, sends joke to this user only */
 	async handleJoke() {
 		const response = await axios.get(`https://icanhazdadjoke.com/`, { headers: { Accept: 'application/json' } });
 		const joke = response.data.joke;
 		this.send(
 			JSON.stringify({
 				type : 'joke',
-				name : 'Dad Joke',
+				name : 'Server',
 				text : joke
+			})
+		);
+	}
+
+	/** Handle asking for members: returns list of members to this user */
+	handleMembers() {
+		const members = Array.from(this.room.members).map((member) => member.name);
+		this.send(
+			JSON.stringify({
+				type    : 'members',
+				name    : 'Server',
+				members
 			})
 		);
 	}
