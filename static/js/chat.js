@@ -53,6 +53,7 @@ $('form').submit(function(evt) {
 
 	let data = { type: 'chat', text: $('#m').val() };
 	if (data.text === '/joke') data.type = 'get-joke';
+	if (data.text === '/members') data.type = 'get-members';
 
 	ws.send(JSON.stringify(data));
 

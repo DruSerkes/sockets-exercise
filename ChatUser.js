@@ -67,7 +67,6 @@ class ChatUser {
 	async handleJoke() {
 		const response = await axios.get(`https://icanhazdadjoke.com/`, { headers: { Accept: 'application/json' } });
 		const joke = response.data.joke;
-		console.log(joke);
 		this.send(
 			JSON.stringify({
 				type : 'joke',
